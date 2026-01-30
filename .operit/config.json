@@ -1,0 +1,55 @@
+{
+    "projectType": "python",
+    "title": "Python 项目",
+    "description": "支持虚拟环境和 pip 包管理，适用于数据分析和开发",
+    "server": {
+        "enabled": false,
+        "port": 8000,
+        "autoStart": false
+    },
+    "preview": {
+        "type": "terminal",
+        "url": "",
+        "showPreviewButton": false
+    },
+    "commands": [
+        {
+            "id": "venv_create",
+            "label": "创建虚拟环境",
+            "command": "python -m venv venv",
+            "workingDir": ".",
+            "shell": true
+        },
+        {
+            "id": "venv_activate",
+            "label": "激活虚拟环境",
+            "command": "source venv/bin/activate || venv\\Scripts\\activate",
+            "workingDir": ".",
+            "shell": true
+        },
+        {
+            "id": "pip_install",
+            "label": "安装依赖",
+            "command": "pip install -r requirements.txt",
+            "workingDir": ".",
+            "shell": true
+        },
+        {
+            "id": "pip_list",
+            "label": "查看已安装包",
+            "command": "pip list",
+            "workingDir": ".",
+            "shell": true
+        },
+        {
+            "id": "python_run",
+            "label": "运行 main.py",
+            "command": "python main.py",
+            "workingDir": ".",
+            "shell": true
+        }
+    ],
+    "export": {
+        "enabled": false
+    }
+}

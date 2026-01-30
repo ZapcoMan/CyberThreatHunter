@@ -1,0 +1,375 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+全面漏洞扫描工具 - 主程序入口
+集成网络扫描、Web漏洞检测、目录爆破、子域名枚举等功能
+"""
+
+import argparse
+import sys
+import json
+from pathlib import Path
+from datetime import datetime
+
+# 导入主扫描器
+from modules.scanner import VulnerabilityScannerMain, ScanResult
+
+
+def print_banner():
+    """打印程序横幅"""
+    banner = """
+╔══════════════════════════════════════════════════════════════╗
+║                全面漏洞扫描工具 v1.0.0                       ║
+║                Comprehensive Vulnerability Scanner           ║
+╠══════════════════════════════════════════════════════════════╣
+║ 功能:                                                        ║
+║   • 端口扫描 (TCP/UDP)                                      ║
+║   • Web漏洞检测 (SQL注入/XSS/命令注入)                      ║
+║   • 目录爆破 (隐藏文件/目录发现)                            ║
+║   • 子域名枚举 (DNS记录查询)                                ║
+║   • 多格式报告 (HTML/JSON/CSV/Excel)                        ║
+╚══════════════════════════════════════════════════════════════╝
+"""
+    print(banner)
+
+
+def load_targets_from_file(filepath: str) -> list:
+    """
+    从文件加载目标列表
+    
+    Args:
+        filepath: 文件路径
+        
+    Returns:
+        list: 目标列表
+    """
+    targets = []
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    targets.append(line)
+        print(f"✅ 从文件加载 {len(targets)} 个目标")
+    except FileNotFoundError:
+        print(f"❌ 文件不存在: {filepath}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ 读取文件失败: {e}")
+        sys.exit(1)
+    
+    return targets
+
+
+def parse_scan_types(scan_arg: str) -> list:
+    """
+    解析扫描类型参数
+    
+    Args:
+        scan_arg: 扫描类型参数
+        
+    Returns:
+        list: 扫描类型列表
+    """
+    if scan_arg == "all":
+        return ["port", "directory", "vulnerability", "subdomain"]
+    elif scan_arg == "network":
+        return ["port", "subdomain"]
+    elif scan_arg == "web":
+        return ["directory", "vulnerability"]
+    else:
+        return [scan_arg]
+
+
+def main():
+    """主函数"""
+    parser = argparse.ArgumentParser(
+        description="全面漏洞扫描工具",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+使用示例:
+  # 扫描单个目标的所有漏洞
+  python main.py --target example.com --scan all
+  
+  # 只扫描Web漏洞
+  python main.py --target example.com --scan web
+  
+  # 扫描多个目标
+  python main.py --targets targets.txt --scan all
+  
+  # 自定义配置文件
+  python main.py --target example.com --config myconfig.yaml
+  
+  # 生成JSON报告
+  python main.py --target example.com --scan all --format json
+  
+  # 指定输出路径
+  python main.py --target example.com --output ./myreport.html
+  
+  # 设置并发线程数
+  python main.py --target example.com --threads 100
+        """
+    )
+    
+    # 目标参数组
+    target_group = parser.add_mutually_exclusive_group(required=True)
+    target_group.add_argument("--target", type=str, help="单个扫描目标 (IP/域名/URL)")
+    target_group.add_argument("--targets", type=str, help="包含多个目标的文件路径")
+    
+    # 扫描参数
+    parser.add_argument("--scan", type=str, default="all",
+                       choices=["all", "network", "web", "port", "directory", 
+                               "vulnerability", "subdomain"],
+                       help="扫描类型 (默认: all)")
+    
+    # 输出参数
+    parser.add_argument("--output", type=str, help="报告输出路径")
+    parser.add_argument("--format", type=str, default="html",
+                       choices=["html", "json", "csv", "excel"],
+                       help="报告格式 (默认: html)")
+    
+    # 配置参数
+    parser.add_argument("--config", type=str, default="config/config.yaml",
+                       help="配置文件路径 (默认: config/config.yaml)")
+    
+    # 性能参数
+    parser.add_argument("--threads", type=int, help="并发线程数")
+    parser.add_argument("--timeout", type=int, help="超时时间(秒)")
+    
+    # 其他参数
+    parser.add_argument("--verbose", "-v", action="store_true",
+                       help="详细输出模式")
+    parser.add_argument("--quiet", "-q", action="store_true",
+                       help="安静模式，只输出错误")
+    parser.add_argument("--no-banner", action="store_true",
+                       help="不显示横幅")
+    
+    args = parser.parse_args()
+    
+    # 显示横幅
+    if not args.no_banner:
+        print_banner()
+    
+    # 准备目标列表
+    if args.target:
+        targets = [args.target]
+        print(f"🎯 扫描目标: {args.target}")
+    else:
+        targets = load_targets_from_file(args.targets)
+        print(f"🎯 扫描 {len(targets)} 个目标")
+    
+    # 解析扫描类型
+    scan_types = parse_scan_types(args.scan)
+    print(f"🔍 扫描类型: {', '.join(scan_types)}")
+    
+    # 创建扫描器
+    try:
+        scanner = VulnerabilityScannerMain(args.config)
+        print("✅ 扫描器初始化完成")
+        
+        # 应用性能参数
+        if args.threads:
+            scanner.config["scanning"]["threads"] = args.threads
+            print(f"⚡ 设置并发线程数: {args.threads}")
+        
+        if args.timeout:
+            scanner.config["scanning"]["timeout"] = args.timeout
+            print(f"⏱️  设置超时时间: {args.timeout}秒")
+        
+    except Exception as e:
+        print(f"❌ 扫描器初始化失败: {e}")
+        sys.exit(1)
+    
+    # 执行扫描
+    print("\n" + "="*60)
+    print("开始扫描...")
+    print("="*60)
+    
+    start_time = datetime.now()
+    
+    try:
+        if len(targets) == 1:
+            # 单个目标扫描
+            result = scanner.scan(targets[0], scan_types)
+            results = [result]
+        else:
+            # 多个目标并发扫描
+            max_workers = args.threads if args.threads else scanner.config["scanning"].get("threads", 50)
+            results = scanner.scan_multiple(targets, scan_types, max_workers)
+        
+    except KeyboardInterrupt:
+        print("\n⚠️  扫描被用户中断")
+        sys.exit(0)
+    except Exception as e:
+        print(f"❌ 扫描过程中发生错误: {e}")
+        sys.exit(1)
+    
+    end_time = datetime.now()
+    elapsed = (end_time - start_time).total_seconds()
+    
+    print("\n" + "="*60)
+    print("扫描完成!")
+    print("="*60)
+    print(f"⏱️  总耗时: {elapsed:.2f}秒")
+    
+    # 生成报告
+    successful_scans = 0
+    total_findings = 0
+    
+    for result in results:
+        if result.status == "completed":
+            successful_scans += 1
+            stats = result.calculate_stats()
+            total_findings += stats["total_findings"]
+            
+            # 生成报告
+            try:
+                report_path = scanner.generate_report(result, args.format, args.output)
+                print(f"📄 报告已生成: {report_path}")
+            except Exception as e:
+                print(f"⚠️  生成报告失败: {e}")
+    
+    # 显示摘要
+    print("\n📊 扫描摘要:")
+    print("-" * 40)
+    print(f"总扫描数: {len(results)}")
+    print(f"成功: {successful_scans}")
+    print(f"失败: {len(results) - successful_scans}")
+    print(f"总发现数: {total_findings}")
+    
+    if successful_scans > 0:
+        # 生成汇总报告（如果有多个成功扫描）
+        if successful_scans > 1:
+            try:
+                summary_path = f"reports/summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+                successful_results = [r for r in results if r.status == "completed"]
+                
+                # 使用报告生成器创建汇总报告
+                from modules.utils.output_reporter import OutputReporter
+                reporter = OutputReporter(scanner.config)
+                summary_path = reporter.generate_summary_report(
+                    [r.to_dict() for r in successful_results], 
+                    "html"
+                )
+                print(f"📊 汇总报告: {summary_path}")
+            except Exception as e:
+                print(f"⚠️  生成汇总报告失败: {e}")
+        
+        # 显示风险分布
+        print("\n⚠️  风险分布:")
+        print("-" * 40)
+        
+        severity_counts = {
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 0,
+            "info": 0
+        }
+        
+        for result in results:
+            if result.status == "completed":
+                stats = result.calculate_stats()
+                for severity in severity_counts:
+                    severity_counts[severity] += stats.get(severity, 0)
+        
+        for severity, count in severity_counts.items():
+            if count > 0:
+                print(f"  {severity.upper():<10}: {count}")
+    
+    print("\n" + "="*60)
+    print("扫描结束。请查看生成的报告获取详细信息。")
+    print("="*60)
+    
+    # 错误报告
+    errors_found = False
+    for result in results:
+        if result.errors:
+            errors_found = True
+            print(f"\n❌ 目标 {result.target} 的错误:")
+            for error in result.errors:
+                print(f"  - {error}")
+    
+    if errors_found:
+        print("\n💡 建议检查网络连接和配置文件，然后重试。")
+    
+    # 退出代码
+    if successful_scans == 0:
+        sys.exit(1)  # 没有成功扫描
+    elif total_findings == 0:
+        sys.exit(0)  # 成功但未发现漏洞
+    else:
+        sys.exit(0)  # 成功并发现漏洞
+
+
+def test_mode():
+    """测试模式，用于快速验证功能"""
+    print("🔧 进入测试模式...")
+    
+    # 创建测试配置
+    test_config = {
+        "scanning": {
+            "timeout": 5,
+            "threads": 10,
+            "user_agent": "VulnerabilityScanner/Test"
+        },
+        "network": {
+            "default_ports": "80,443,8080"
+        },
+        "web": {
+            "directories_wordlist": "config/wordlists/directories.txt",
+            "extensions": [".php", ".html", ".txt"]
+        },
+        "dns": {
+            "subdomains_wordlist": "config/wordlists/subdomains.txt",
+            "dns_servers": ["8.8.8.8"]
+        },
+        "output": {
+            "report_dir": "reports",
+            "default_format": "html"
+        }
+    }
+    
+    # 测试目标
+    test_target = "127.0.0.1"
+    
+    print(f"🎯 测试目标: {test_target}")
+    print("🔍 测试端口扫描...")
+    
+    try:
+        # 测试端口扫描器
+        from modules.network.port_scanner import PortScanner
+        port_scanner = PortScanner(test_config)
+        
+        # 只扫描常见端口
+        findings = port_scanner.scan_with_socket(test_target, [80, 443, 8080, 22])
+        
+        if findings:
+            print(f"✅ 发现 {len(findings)} 个开放端口")
+            for finding in findings[:3]:  # 只显示前3个
+                print(f"  - 端口 {finding['details']['port']}/{finding['details']['protocol']}")
+        else:
+            print("ℹ️  未发现开放端口")
+        
+        print("\n🎉 测试完成!")
+        
+    except Exception as e:
+        print(f"❌ 测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    # 检查是否处于测试模式
+    if len(sys.argv) == 1:
+        # 没有参数时显示帮助
+        print_banner()
+        print("\n使用方法: python main.py --help 查看帮助")
+        print("测试模式: python main.py --test")
+        sys.exit(0)
+    elif len(sys.argv) == 2 and sys.argv[1] == "--test":
+        # 测试模式
+        test_mode()
+    else:
+        # 正常模式
+        main()

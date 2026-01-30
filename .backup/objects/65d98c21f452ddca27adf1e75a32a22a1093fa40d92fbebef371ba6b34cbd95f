@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漏洞扫描报告 - demo-site.com</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .summary {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+            margin-right: 5px;
+        }
+        
+        .findings-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .findings-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .findings-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        
+        .findings-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .details-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .details-panel pre {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        
+        .toggle-details {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .toggle-details:hover {
+            background: #e9ecef;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .risk-chart {
+            height: 200px;
+            background: linear-gradient(90deg, 
+                #dc3545 50.0%, 
+                #fd7e14 50.0%, 
+                #ffc107 0.0%, 
+                #28a745 0.0%, 
+                #17a2b8 0.0%);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+    </style>
+    <script>
+        function toggleDetails(id) {
+            var panel = document.getElementById('details-' + id);
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+        
+        function expandAll() {
+            var panels = document.querySelectorAll('.details-panel');
+            panels.forEach(function(panel) {
+                panel.style.display = 'block';
+            });
+        }
+        
+        function collapseAll() {
+            var panels = document.querySelectorAll('.details-panel');
+            panels.forEach(function(panel) {
+                panel.style.display = 'none';
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 漏洞扫描报告</h1>
+        <div class="subtitle">
+            目标: <strong>demo-site.com</strong> | 
+            扫描时间: 2024-01-15T09:30:00 - 2026-01-30T06:54:28.368870 | 
+            扫描状态: completed
+        </div>
+    </div>
+    
+    <div class="summary">
+        <h2>📊 扫描摘要</h2>
+        <div class="risk-chart"></div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #dc3545;"></div>
+                <span>严重 (1)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #fd7e14;"></div>
+                <span>高危 (1)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ffc107;"></div>
+                <span>中危 (0)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #28a745;"></div>
+                <span>低危 (0)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #17a2b8;"></div>
+                <span>信息 (0)</span>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">总发现数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">严重漏洞</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">高危漏洞</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">中危漏洞</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <button onclick="expandAll()" style="margin-right: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                展开所有详情
+            </button>
+            <button onclick="collapseAll()" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                收起所有详情
+            </button>
+        </div>
+    </div>
+    
+    <h2>📋 漏洞详情</h2>
+    <table class="findings-table">
+        <thead>
+            <tr>
+                <th width="5%">ID</th>
+                <th width="20%">漏洞类型</th>
+                <th width="15%">风险等级</th>
+                <th width="40%">描述</th>
+                <th width="20%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>1</td>
+                <td><strong>authentication_bypass</strong></td>
+                <td><span class="severity-badge" style="background-color: #dc3545;">CRITICAL</span></td>
+                <td>通过修改参数可绕过登录验证</td>
+                <td>
+                    <button class="toggle-details" onclick="toggleDetails(1)">查看详情</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <div class="details-panel" id="details-1">
+                        <h4>详细信息</h4>
+                        <p><strong>名称:</strong> 认证绕过漏洞</p>
+                        <p><strong>CVSS评分:</strong> 9.5</p>
+                        <p><strong>证据:</strong> ['可跳过密码验证', '直接访问管理页面']</p>
+                        <p><strong>修复建议:</strong> 实施完整的会话管理，验证所有请求</p>
+                        
+                        <h4>原始数据</h4>
+                        <pre>{
+  "url": "http://demo-site.com/admin",
+  "bypass_method": "parameter_manipulation"
+}</pre>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td><strong>file_upload</strong></td>
+                <td><span class="severity-badge" style="background-color: #fd7e14;">HIGH</span></td>
+                <td>文件上传功能未验证文件类型</td>
+                <td>
+                    <button class="toggle-details" onclick="toggleDetails(2)">查看详情</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <div class="details-panel" id="details-2">
+                        <h4>详细信息</h4>
+                        <p><strong>名称:</strong> 不安全文件上传</p>
+                        <p><strong>CVSS评分:</strong> 8.8</p>
+                        <p><strong>证据:</strong> ['可上传PHP文件', '文件可被远程执行']</p>
+                        <p><strong>修复建议:</strong> 实施文件类型白名单，扫描上传内容</p>
+                        
+                        <h4>原始数据</h4>
+                        <pre>{
+  "url": "http://demo-site.com/upload",
+  "allowed_extensions": []
+}</pre>
+                    </div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>📅 报告生成时间: 2026-01-30 06:54:28</p>
+        <p>🔒 本报告仅供授权测试使用，请妥善保管</p>
+        <p>⚠️ 所有发现均需在获得授权的前提下进行验证和修复</p>
+    </div>
+</body>
+</html>

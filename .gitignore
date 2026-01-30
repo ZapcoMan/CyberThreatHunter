@@ -1,0 +1,16 @@
+# 虚拟环境（2个都排除）
+venv/
+vulnscan_venv/
+# 扫描生成的报告/日志（无需上传）
+reports/
+logs/
+# Python缓存文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# 临时文件
+*.swp
+*.tmp
+# 若配置文件有敏感信息，可保留这行（无则可删）
+# config/
