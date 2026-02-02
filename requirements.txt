@@ -2,31 +2,39 @@
 # 专业的网络漏洞扫描与安全审计工具
 # https://github.com/CyberThreatHunter
 
-# 网络扫描和漏洞检测库
-requests==2.31.0
-beautifulsoup4==4.12.2
-lxml==5.1.0
-urllib3==2.0.7
-
-# DNS/子域名扫描
-dnspython==2.4.2
-
-# 端口扫描和网络探测
-python-nmap==0.7.1
-scapy==2.5.0
-
-# 异步HTTP请求
-aiohttp==3.9.1
-asyncio==3.4.3
-
-# 数据处理和报告
-pandas==2.3.3
-openpyxl==3.1.2
-pytest==7.4.3
-
-# 颜色输出
-colorama==0.4.6
-termcolor==2.4.0
-
-# 配置管理
-pyyaml==6.0.1
+aiohappyeyeballs==2.6.1 # 异步DNS解析库，用于优化网络连接性能
+aiohttp==3.13.3 # 异步HTTP客户端/服务器框架，用于处理网络请求
+aiosignal==1.4.0 # 异步信号处理库，用于异步事件通知
+asyncio==3.4.3 # Python标准异步I/O库，用于并发编程
+attrs==25.4.0 # Python类属性定义库，简化类的创建和管理
+beautifulsoup4==4.12.2 # HTML/XML解析库，用于网页数据提取
+certifi==2026.1.4 # SSL证书包，用于HTTPS连接验证
+charset-normalizer==3.4.4 # 字符编码检测和标准化库
+click==8.3.1 # 命令行界面创建工具
+colorama==0.4.6 # 跨平台终端颜色输出库
+dnspython==2.4.2 # DNS工具包，用于DNS查询和操作
+et_xmlfile==2.0.0 # Excel文件处理库的依赖项
+frozenlist==1.8.0 # 不可变列表实现，用于异步编程中的数据结构
+idna==3.11 # 国际化域名支持库
+iniconfig==2.3.0 # INI配置文件解析器
+lxml==6.0.2 # XML和HTML处理库，提供高效的解析功能
+multidict==6.7.1 # 多值字典实现，用于HTTP头部等场景
+numpy==2.4.2 # 数值计算基础库，提供多维数组操作
+openpyxl==3.1.2 # Excel文件读写库
+packaging==26.0 # Python包版本和规范处理库
+pandas==2.3.3 # 数据分析和处理库，提供DataFrame等数据结构
+pluggy==1.6.0 # 插件系统管理库，用于pytest等框架
+propcache==0.4.1 # 属性缓存库，优化属性访问性能
+pytest==7.4.3 # Python测试框架
+python-dateutil==2.9.0.post0 # 日期时间处理扩展库
+python-nmap==0.7.1 # Nmap网络扫描工具的Python接口
+pytz==2025.2 # 时区处理库
+PyYAML==6.0.1 # YAML解析和生成库
+requests==2.31.0 # HTTP请求库，简化网络请求操作
+scapy==2.5.0 # 网络数据包处理和分析库
+six==1.17.0 # Python 2/3兼容性库
+soupsieve==2.8.3 # BeautifulSoup的CSS选择器引擎
+termcolor==2.4.0 # 终端文本颜色和样式设置库
+tzdata==2025.3 # 时区数据库
+urllib3==2.6.3 # HTTP客户端库，提供连接池等功能
+yarl==1.22.0 # Yet Another URL library，用于URL操作和解析
