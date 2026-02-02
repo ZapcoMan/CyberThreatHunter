@@ -312,7 +312,7 @@ def test_mode():
         "scanning": {
             "timeout": 5,
             "threads": 10,
-            "user_agent": "VulnerabilityScanner/Test"
+            "user_agents": ["VulnerabilityScanner/Test"]
         },
         "network": {
             "default_ports": "80,443,8080"

@@ -12,6 +12,7 @@ from urllib.parse import urljoin
 import time
 import logging
 from pathlib import Path
+import random
 
 
 class DirectoryBuster:
@@ -31,8 +32,13 @@ class DirectoryBuster:
         
         # 会话设置
         self.session = requests.Session()
+        
+        # 获取user_agents列表，如果没有则使用默认列表
+        user_agents = self.scan_config.get("user_agents", ["DirectoryBuster/1.0"])
+        selected_user_agent = random.choice(user_agents)
+        
         self.session.headers.update({
-            "User-Agent": self.scan_config.get("user_agent", "DirectoryBuster/1.0")
+            "User-Agent": selected_user_agent
         })
         
         # 设置超时
@@ -413,7 +419,7 @@ def main():
         "scanning": {
             "timeout": 10,
             "threads": 50,
-            "user_agent": "DirectoryBuster/1.0"
+            "user_agents": ["DirectoryBuster/1.0"]
         }
     }
     
