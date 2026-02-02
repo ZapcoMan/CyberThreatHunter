@@ -24,7 +24,7 @@
 ## 项目结构
 
 ```
-vuln_scanner/
+CyberThreatHunter/
 ├── main.py              # 主程序入口
 ├── requirements.txt     # Python依赖列表
 ├── config/
