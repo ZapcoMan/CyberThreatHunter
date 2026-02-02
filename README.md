@@ -150,3 +150,5 @@ web:
 **作者**: Security Research Team  
 **版本**: 1.0.0  
 **最后更新**: 2024-01-15
+
+## **在此致敬上游作者：[J09715/Vulnerability-Scanning-tool](https://github.com/J09715/Vulnerability-Scanning-tool) 本仓库做了更激进的修改，感谢原作者的开源精神**
