@@ -1,5 +1,0 @@
-home = /usr/bin
-include-system-site-packages = false
-version = 3.12.3
-executable = /usr/bin/python3.12
-command = /usr/bin/python -m venv /data/user/0/com.ai.assistance.operit/files/workspace/335fe92a-f3b7-45d2-b148-c21daf42cbe6/venv
