@@ -85,6 +85,7 @@ scanning:
     - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     - "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0"
     - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    # 这里的 User-Agent 列表 不止这些 由于篇幅有限所以就只有这几个放在这里了 实际上 配置文件中有各种设备的User-Agent
 
 web:
   directories_wordlist: "config/wordlists/directories.txt"
