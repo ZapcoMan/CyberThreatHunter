@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-全面漏洞扫描工具 - 主程序入口
+CyberThreatHunter - 主程序入口
 集成网络扫描、Web漏洞检测、目录爆破、子域名枚举等功能
 """
 
@@ -19,15 +19,16 @@ def print_banner():
     """打印程序横幅"""
     banner = """
 ╔══════════════════════════════════════════════════════════════╗
-║                全面漏洞扫描工具 v1.0.0                       ║
-║                                                Mochen              ║
+║              CyberThreatHunter - 网络威胁猎手 v1.0.0           ║
+║   基于 github J09715/Vulnerability-Scanning-tool 二次开发      ║
+║                                  二次开发作者:ZapcoMan         ║
 ╠══════════════════════════════════════════════════════════════╣
-║ 功能:                                                        ║
-║   • 端口扫描 (TCP/UDP)                                      ║
-║   • Web漏洞检测 (SQL注入/XSS/命令注入)                      ║
-║   • 目录爆破 (隐藏文件/目录发现)                            ║
-║   • 子域名枚举 (DNS记录查询)                                ║
-║   • 多格式报告 (HTML/JSON/CSV/Excel)                        ║
+║ 功能:                                                         ║
+║   • 端口扫描 (TCP/UDP)                                         ║
+║   • Web漏洞检测 (SQL注入/XSS/命令注入)                           ║
+║   • 目录爆破 (隐藏文件/目录发现)                                  ║
+║   • 子域名枚举 (DNS记录查询)                                     ║
+║   • 多格式报告 (HTML/JSON/CSV/Excel)                           ║
 ╚══════════════════════════════════════════════════════════════╝
 """
     print(banner)
@@ -84,7 +85,7 @@ def parse_scan_types(scan_arg: str) -> list:
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(
-        description="全面漏洞扫描工具",
+        description="CyberThreatHunter - 全面漏洞扫描工具",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 使用示例:

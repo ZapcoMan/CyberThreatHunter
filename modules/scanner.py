@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-漏洞扫描器主模块
+CyberThreatHunter - 漏洞扫描器主模块
 提供统一的扫描接口和结果管理
 """
 

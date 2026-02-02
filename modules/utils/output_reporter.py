@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-输出报告模块
+CyberThreatHunter - 输出报告模块
 生成各种格式的扫描报告（HTML、JSON、CSV、Excel）
 """
 

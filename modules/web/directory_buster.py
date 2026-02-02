@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-目录爆破模块
+CyberThreatHunter - 目录爆破模块
 用于发现Web应用中的隐藏目录和文件
 """
 

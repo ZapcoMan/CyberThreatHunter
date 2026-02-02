@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-DNS子域名枚举模块
+CyberThreatHunter - DNS子域名枚举模块
 用于发现目标域名的所有子域名
 """
 

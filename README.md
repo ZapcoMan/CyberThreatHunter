@@ -1,4 +1,4 @@
-# 全面漏洞扫描工具 (Vulnerability Scanner)
+# CyberThreatHunter - 全面漏洞扫描工具
 
 一个全面的网络安全漏洞扫描工具，支持多种扫描功能，旨在帮助安全工程师和渗透测试人员发现网络和Web应用中的安全漏洞。
 

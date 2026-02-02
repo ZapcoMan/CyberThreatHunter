@@ -1,4 +1,7 @@
-# 漏洞扫描工具依赖
+# CyberThreatHunter 依赖库
+# 专业的网络漏洞扫描与安全审计工具
+# https://github.com/CyberThreatHunter
+
 # 网络扫描和漏洞检测库
 requests==2.31.0
 beautifulsoup4==4.12.2

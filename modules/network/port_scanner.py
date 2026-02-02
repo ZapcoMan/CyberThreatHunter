@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-端口扫描模块
+CyberThreatHunter - 端口扫描模块
 提供TCP/UDP端口扫描功能
 """
 
